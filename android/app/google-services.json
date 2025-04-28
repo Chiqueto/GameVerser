@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "864149595642",
+    "project_id": "superhero-ca382",
+    "storage_bucket": "superhero-ca382.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:864149595642:android:00735a9914a9eb4ae83043",
+        "android_client_info": {
+          "package_name": "com.example.superhero"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD9rWsoDGcRNYvz9Z5OHzbkENWV7aRwA1A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
