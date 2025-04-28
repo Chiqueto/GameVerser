@@ -12,24 +12,22 @@ class GameDetailPage extends StatefulWidget {
 }
 
 class _GameDetailPageState extends State<GameDetailPage> {
-  late Map<String, dynamic> gameDetails;
+  Map<String, dynamic>? gameDetails;
   bool _isLoading = true;
   List<String> genreNames = [];
   List<String> platformNames = [];
-  List<String> ageRatingNames = [];
 
   @override
   void initState() {
     super.initState();
-    _fetchGameDetails(); // Carrega os detalhes do jogo
+    _fetchGameDetails();
   }
 
-  // Função para buscar os detalhes adicionais do jogo usando o ID
   Future<void> _fetchGameDetails() async {
     try {
       final gameId = widget.game['id'];
       final query = """
-      fields name, cover.url, summary, first_release_date, platforms, genres, age_ratings;
+      fields name, cover.url, summary, first_release_date, total_rating, rating_count, platforms.name, genres.name, url;
       where id = $gameId;
       """;
 
@@ -38,18 +36,17 @@ class _GameDetailPageState extends State<GameDetailPage> {
         query: query.trim(),
       );
 
-      setState(() {
-        gameDetails =
-            result.isNotEmpty ? result[0] : {}; // Armazena os detalhes
-        _isLoading = false; // Finaliza o carregamento
-      });
-
-      // Agora, vamos buscar os detalhes dos gêneros, plataformas e faixa etária
-      await _fetchAdditionalDetails();
+      if (result.isNotEmpty) {
+        setState(() {
+          gameDetails = result[0];
+          _isLoading = false;
+        });
+        await _fetchAdditionalDetails();
+      } else {
+        setState(() => _isLoading = false);
+      }
     } catch (e) {
-      setState(() {
-        _isLoading = false; // Finaliza carregamento
-      });
+      setState(() => _isLoading = false);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Erro ao carregar detalhes do jogo: $e')),
       );
@@ -57,60 +54,23 @@ class _GameDetailPageState extends State<GameDetailPage> {
   }
 
   Future<void> _fetchAdditionalDetails() async {
-    // Gêneros
-    if (gameDetails['genres'] != null) {
-      final genreIds = gameDetails['genres'];
-      final genreQuery = """
-      fields name;
-      where id in (${genreIds.join(',')});
-      """;
-      final genreResult = await ApiService().fetchIGDBData(
-        endpoint: 'genres',
-        query: genreQuery.trim(),
-      );
-      setState(() {
-        genreNames = genreResult
-            .map((genre) => genre['name']?.toString() ?? 'Desconhecido')
-            .toList();
-      });
+    if (gameDetails == null) return;
+
+    if (gameDetails!['platforms'] != null &&
+        gameDetails!['platforms'] is List) {
+      final platformList = gameDetails!['platforms'] as List;
+      platformNames = platformList
+          .map((platform) => platform['name']?.toString() ?? 'Desconhecido')
+          .toList();
     }
 
-    // Plataformas
-    if (gameDetails['platforms'] != null) {
-      final platformIds = gameDetails['platforms'];
-      final platformQuery = """
-      fields name;
-      where id in (${platformIds.join(',')});
-      """;
-      final platformResult = await ApiService().fetchIGDBData(
-        endpoint: 'platforms',
-        query: platformQuery.trim(),
-      );
-      setState(() {
-        platformNames = platformResult
-            .map((platform) => platform['name']?.toString() ?? 'Desconhecido')
-            .toList();
-      });
+    if (gameDetails!['genres'] != null && gameDetails!['genres'] is List) {
+      final genreList = gameDetails!['genres'] as List;
+      genreNames = genreList
+          .map((genre) => genre['name']?.toString() ?? 'Desconhecido')
+          .toList();
     }
-
-    // Faixa etária
-    if (gameDetails['age_ratings'] != null) {
-      final ageRatingIds = gameDetails['age_ratings'];
-      final ageRatingQuery = """
-      fields rating_category;
-      where id in (${ageRatingIds.join(',')});
-      """;
-      final ageRatingResult = await ApiService().fetchIGDBData(
-        endpoint: 'age_ratings',
-        query: ageRatingQuery.trim(),
-      );
-      setState(() {
-        ageRatingNames = ageRatingResult
-            .map((ageRating) =>
-                ageRating['rating_category']?.toString() ?? 'Desconhecido')
-            .toList();
-      });
-    }
+    setState(() {});
   }
 
   String _formatDate(int? timestamp) {
@@ -119,87 +79,136 @@ class _GameDetailPageState extends State<GameDetailPage> {
     return DateFormat('dd/MM/yyyy').format(date);
   }
 
-  String _formatList(List<String> list) {
-    if (list.isEmpty) return 'Não disponível';
-    return list.join(', ');
-  }
-
   @override
   Widget build(BuildContext context) {
-    final coverUrl = (widget.game['cover']?['url'] as String?) != null
-        ? 'https:${widget.game['cover']['url']}'
-            .replaceAll('t_thumb', 't_cover_big')
+    final coverUrl = (gameDetails?['cover']?['url'] as String?) != null
+        ? (() {
+            var url = gameDetails!['cover']['url'] as String;
+            if (url.startsWith('//')) {
+              url = 'https:$url';
+            }
+            return url.replaceAll('t_thumb', 't_cover_big');
+          })()
         : null;
 
     return Scaffold(
-      appBar: AppBar(title: Text(widget.game['name'] ?? 'Detalhes')),
+      appBar: AppBar(
+        title: Text(gameDetails?['name'] ?? 'Detalhes'),
+        centerTitle: true,
+      ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (coverUrl != null)
+          : gameDetails == null
+              ? const Center(child: Text('Detalhes não disponíveis.'))
+              : ListView(
+                  padding: const EdgeInsets.all(16),
+                  children: [
+                    if (coverUrl != null)
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: Image.network(
+                          coverUrl,
+                          width: double.infinity,
+                          height: 250,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    const SizedBox(height: 20),
                     Center(
-                      child: Image.network(
-                        coverUrl,
-                        width: 400,
-                        height: 250,
-                        fit: BoxFit.cover,
+                      child: Text(
+                        gameDetails?['name'] ?? 'Sem nome',
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context)
+                            .textTheme
+                            .headlineMedium
+                            ?.copyWith(fontWeight: FontWeight.bold),
                       ),
                     ),
-                  const SizedBox(height: 16),
-                  Text(
-                    gameDetails['name'] ?? 'Sem nome',
-                    style: Theme.of(context).textTheme.headlineSmall,
-                  ),
-                  const SizedBox(height: 8),
-                  if (gameDetails['total_rating'] != null)
+                    const SizedBox(height: 16),
+                    const Divider(),
+                    if (gameDetails?['total_rating'] != null)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.star, color: Colors.amber),
+                          const SizedBox(width: 6),
+                          Text(
+                              '${gameDetails!['total_rating'].toStringAsFixed(1)} / 100',
+                              style: const TextStyle(fontSize: 16)),
+                        ],
+                      ),
+                    const SizedBox(height: 16),
+                    const Divider(),
+                    Row(
+                      children: [
+                        const Icon(Icons.calendar_today,
+                            size: 20, color: Colors.blueGrey),
+                        const SizedBox(width: 8),
+                        Text(
+                            'Lançamento: ${_formatDate(gameDetails?['first_release_date'])}',
+                            style: const TextStyle(fontSize: 16)),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    if (platformNames.isNotEmpty)
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: platformNames
+                            .map((name) => Chip(
+                                  label: Text(name,
+                                      style: const TextStyle(fontSize: 13)),
+                                  backgroundColor: Colors.blue.shade100,
+                                ))
+                            .toList(),
+                      ),
+                    const SizedBox(height: 16),
+                    if (genreNames.isNotEmpty)
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: genreNames
+                            .map((name) => Chip(
+                                  label: Text(name,
+                                      style: const TextStyle(fontSize: 13)),
+                                  backgroundColor: Colors.purple.shade100,
+                                ))
+                            .toList(),
+                      ),
+                    const SizedBox(height: 24),
+                    const Divider(),
                     Text(
-                      '⭐ Avaliação: ${widget.game['total_rating'].toStringAsFixed(1)} / 100',
-                      style:
-                          const TextStyle(fontSize: 14, color: Colors.blueGrey),
+                      'Descrição:',
+                      style: Theme.of(context).textTheme.titleMedium,
                     ),
-                  const SizedBox(height: 12),
-                  Text(
-                    '📆 Lançamento: ${_formatDate(widget.game['first_release_date'])}',
-                    style: const TextStyle(fontSize: 14),
-                  ),
-                  const SizedBox(height: 12),
-                  if (platformNames.isNotEmpty)
+                    const SizedBox(height: 8),
                     Text(
-                      '🎮 Plataformas: ${_formatList(platformNames)}',
-                      style: const TextStyle(fontSize: 14),
+                      gameDetails?['summary'] ??
+                          'Este jogo não possui descrição.',
+                      style: const TextStyle(
+                          fontSize: 16, color: Colors.black87, height: 1.4),
                     ),
-                  const SizedBox(height: 12),
-                  if (genreNames.isNotEmpty)
-                    Text(
-                      '🧬 Gêneros: ${_formatList(genreNames)}',
-                      style: const TextStyle(fontSize: 14),
-                    ),
-                  const SizedBox(height: 12),
-                  if (ageRatingNames.isNotEmpty)
-                    Text(
-                      '📑 Faixa Etária: ${_formatList(ageRatingNames)}',
-                      style: const TextStyle(fontSize: 14),
-                    ),
-                  const SizedBox(height: 24),
-                  Text(
-                    widget.game['summary'] ?? 'Este jogo não possui descrição.',
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                  const SizedBox(height: 24),
-                  if (widget.game['url'] != null)
-                    TextButton(
-                      onPressed: () {
-                        // Se quiser abrir no navegador, adicione url_launcher depois
-                      },
-                      child: const Text('🔗 Ver no IGDB'),
-                    ),
-                ],
-              ),
-            ),
+                    const SizedBox(height: 30),
+                    if (gameDetails?['url'] != null)
+                      Center(
+                        child: ElevatedButton.icon(
+                          onPressed: () {
+                            // Future: adicionar link usando url_launcher
+                          },
+                          icon: const Icon(Icons.link),
+                          label: const Text('Ver no IGDB'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.deepPurpleAccent,
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 24, vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
     );
   }
 }
