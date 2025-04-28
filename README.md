@@ -1,29 +1,29 @@
 # 🎮 GameVerseR
 
-O **GameVerseR** é um aplicativo Flutter que permite explorar os jogos mais populares do momento de forma rápida, elegante e organizada!  
-Consome dados da API **IGDB** para listar, pesquisar e visualizar detalhes completos de games.
+O **GameVerseR** é um aplicativo Flutter completo que permite explorar os jogos mais populares do momento de forma rápida, segura e elegante!  
+Além da listagem de jogos, agora conta com **autenticação segura via Firebase**.
 
 ---
 
 ## ✨ Features
 
-- 🔍 Pesquisa de jogos pelo nome
+- 🔐 Login e Cadastro de Usuários via **Firebase Authentication**
+- 🔍 Pesquisa de jogos por nome (consulta dinâmica)
 - 🕹️ Listagem dos jogos mais populares
-- 🏷️ Exibição de gêneros e plataformas em chips estilizados
-- 📄 Visualização da descrição e avaliação dos jogos
-- 🖼️ Capa do jogo em destaque com design responsivo
-- 🚀 Navegação fluida entre listagem e detalhes
-- 📦 Geração de APK para instalação
+- 🏷️ Exibição de gêneros e plataformas em **chips estilizados**
+- 📄 Visualização detalhada com capa grande, descrição e avaliação dos jogos
+- 🖼️ Layout responsivo e moderno
+- 🚀 Geração de APK de produção para Android
 
 ---
 
 ## 📸 Screenshots
 
-> (Adicione aqui prints do seu app rodando futuramente!)
+> (Adicione prints aqui quando quiser)
 
-| HomePage | Detalhes do Jogo |
-|:---:|:---:|
-| ![HomePage](./screenshots/home.png) | ![DetailPage](./screenshots/detail.png) |
+| Login/Cadastro | HomePage | Detalhes do Jogo |
+|:---:|:---:|:---:|
+| ![LoginPage](./screenshots/login.png) | ![HomePage](./screenshots/home.png) | ![DetailPage](./screenshots/detail.png) |
 
 ---
 
@@ -31,9 +31,10 @@ Consome dados da API **IGDB** para listar, pesquisar e visualizar detalhes compl
 
 - **Flutter** (Framework principal)
 - **Dart** (Linguagem)
-- **API IGDB** (Base de dados dos jogos)
+- **Firebase Authentication** (Gerenciamento de usuários)
+- **API IGDB** (Base de dados de jogos)
 - **Intl** (Formatação de datas)
-- **Material 3** (Componentes UI)
+- **Material 3** (Componentes modernos de UI)
 
 ---
 
