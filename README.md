@@ -1,19 +1,45 @@
-# SuperHero
+# 🎮 GameVerseR
 
-A new Flutter project created with FlutLab - https://flutlab.io
+O **GameVerseR** é um aplicativo Flutter que permite explorar os jogos mais populares do momento de forma rápida, elegante e organizada!  
+Consome dados da API **IGDB** para listar, pesquisar e visualizar detalhes completos de games.
 
-## Getting Started
+---
 
-A few resources to get you started if this is your first Flutter project:
+## ✨ Features
 
-- https://flutter.dev/docs/get-started/codelab
-- https://flutter.dev/docs/cookbook
+- 🔍 Pesquisa de jogos pelo nome
+- 🕹️ Listagem dos jogos mais populares
+- 🏷️ Exibição de gêneros e plataformas em chips estilizados
+- 📄 Visualização da descrição e avaliação dos jogos
+- 🖼️ Capa do jogo em destaque com design responsivo
+- 🚀 Navegação fluida entre listagem e detalhes
+- 📦 Geração de APK para instalação
 
-For help getting started with Flutter, view our
-https://flutter.dev/docs, which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+---
 
-## Getting Started: FlutLab - Flutter Online IDE
+## 📸 Screenshots
 
-- How to use FlutLab? Please, view our https://flutlab.io/docs
-- Join the discussion and conversation on https://flutlab.io/residents
+> (Adicione aqui prints do seu app rodando futuramente!)
+
+| HomePage | Detalhes do Jogo |
+|:---:|:---:|
+| ![HomePage](./screenshots/home.png) | ![DetailPage](./screenshots/detail.png) |
+
+---
+
+## 🛠️ Tecnologias Utilizadas
+
+- **Flutter** (Framework principal)
+- **Dart** (Linguagem)
+- **API IGDB** (Base de dados dos jogos)
+- **Intl** (Formatação de datas)
+- **Material 3** (Componentes UI)
+
+---
+
+## ⚙️ Como Rodar o Projeto
+
+1. Clone o repositório:
+
+```bash
+git clone https://github.com/Chiqueto/GameVerseR.git
