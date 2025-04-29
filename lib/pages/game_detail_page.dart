@@ -198,7 +198,8 @@ class _GameDetailPageState extends State<GameDetailPage> {
                           icon: const Icon(Icons.link),
                           label: const Text('Ver no IGDB'),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.deepPurpleAccent,
+                            backgroundColor:
+                                const Color.fromARGB(255, 169, 141, 247),
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 24, vertical: 12),
                             shape: RoundedRectangleBorder(

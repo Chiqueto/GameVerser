@@ -10,6 +10,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
   bool _hasMore = true;
   final List<dynamic> _games = [];
@@ -17,28 +18,37 @@ class _HomePageState extends State<HomePage> {
   bool _isLoading = false;
 
   String _escapeSearchQuery(String query) {
-    return query.replaceAll("'", r"\'");
+    return query.replaceAll("'", r"\\'");
   }
 
-  Future<void> _loadGames() async {
+  Future<void> _loadGames({bool reset = false}) async {
+    if (reset) {
+      setState(() {
+        _games.clear();
+        _currentPage = 0;
+        _hasMore = true;
+      });
+    }
+
     setState(() => _isLoading = true);
 
     final timestampAgora = DateTime.now().millisecondsSinceEpoch ~/ 1000;
 
     try {
       final isSearching = _searchQuery.isNotEmpty;
-      final String searchFilter = isSearching
-          ? 'where name ~ *"${_escapeSearchQuery(_searchQuery)}"*;'
-          : '';
+      final String searchFilter =
+          isSearching ? 'search "${_escapeSearchQuery(_searchQuery)}";' : '';
 
       final query = """
       fields cover.url, name, summary, first_release_date, total_rating, rating_count, platforms.name, genres.name;
       $searchFilter
       where first_release_date < $timestampAgora;
-      sort rating_count desc;
+      ${isSearching ? "" : "sort rating_count desc;"}
       limit 10;
       offset ${_currentPage * 10};
       """;
+
+      print('Query: $query');
 
       final newGames = await ApiService().fetchIGDBData(
         endpoint: 'games',
@@ -68,6 +78,12 @@ class _HomePageState extends State<HomePage> {
   }
 
   @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -92,21 +108,36 @@ class _HomePageState extends State<HomePage> {
   Widget _buildSearchField() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      child: TextField(
-        decoration: InputDecoration(
-          hintText: 'Buscar por nome...',
-          prefixIcon: const Icon(Icons.search),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-        ),
-        onChanged: (value) {
-          setState(() {
-            _searchQuery = value.toLowerCase();
-            _games.clear();
-            _currentPage = 0;
-            _hasMore = true;
-          });
-          _loadGames();
-        },
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                hintText: 'Buscar por nome...',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          ElevatedButton(
+            onPressed: () {
+              setState(() {
+                _searchQuery = _searchController.text.trim().toLowerCase();
+              });
+              _loadGames(reset: true);
+            },
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.all(16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            child: const Icon(Icons.search),
+          ),
+        ],
       ),
     );
   }
@@ -185,7 +216,7 @@ class _HomePageState extends State<HomePage> {
                       : ElevatedButton.icon(
                           onPressed: _loadGames,
                           icon: const Icon(Icons.add),
-                          label: const Text("Carregar mais"),
+                          label: const Text('Carregar mais'),
                         ),
                 ),
               )
