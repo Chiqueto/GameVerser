@@ -21,9 +21,13 @@ Além da listagem de jogos, agora conta com **autenticação segura via Firebase
 
 > (Adicione prints aqui quando quiser)
 
-| Login/Cadastro | HomePage | Detalhes do Jogo |
+| Login/Cadastro | HomePage | Detalhes do Jogo | Busca por Nome |
 |:---:|:---:|:---:|
-| ![LoginPage](./screenshots/login.png) | ![HomePage](./screenshots/home.png) | ![DetailPage](./screenshots/detail.png) |
+| ![login](https://github.com/user-attachments/assets/be464f6e-8e03-4f53-adc0-2789c8dec8ce) | ![home](https://github.com/user-attachments/assets/b2e6277b-fce9-41d9-92ea-dae775899d35) | ![detail](https://github.com/user-attachments/assets/48a70d26-596c-4db8-8a65-110aebb6aea3) | ![search](https://github.com/user-attachments/assets/c7d70bb0-fd19-46b0-a690-7ceb9197c86a) |
+
+
+
+
 
 ---
 
