@@ -19,11 +19,27 @@ Além da listagem de jogos, agora conta com **autenticação segura via Firebase
 
 ## 📸 Screenshots
 
-> (Adicione prints aqui quando quiser)
+<table>
+  <tr>
+    <td align="center"><b>Login/Cadastro</b></td>
+    <td align="center"><b>HomePage</b></td>
+  </tr>
+  <tr>
+    <td><img src="https://github.com/user-attachments/assets/be464f6e-8e03-4f53-adc0-2789c8dec8ce" width="300"/></td>
+    <td><img src="https://github.com/user-attachments/assets/b2e6277b-fce9-41d9-92ea-dae775899d35" width="300"/></td>
+  </tr>
+</table>
 
-| Login/Cadastro | HomePage | Detalhes do Jogo | Busca por Nome |
-|:---:|:---:|:---:|
-| ![login](https://github.com/user-attachments/assets/be464f6e-8e03-4f53-adc0-2789c8dec8ce) | ![home](https://github.com/user-attachments/assets/b2e6277b-fce9-41d9-92ea-dae775899d35) | ![detail](https://github.com/user-attachments/assets/48a70d26-596c-4db8-8a65-110aebb6aea3) | ![search](https://github.com/user-attachments/assets/c7d70bb0-fd19-46b0-a690-7ceb9197c86a) |
+<table>
+  <tr>
+    <td align="center"><b>Detalhes do Jogo</b></td>
+    <td align="center"><b>Busca por Nome</b></td>
+  </tr>
+  <tr>
+    <td><img src="https://github.com/user-attachments/assets/48a70d26-596c-4db8-8a65-110aebb6aea3" width="300"/></td>
+    <td><img src="https://github.com/user-attachments/assets/c7d70bb0-fd19-46b0-a690-7ceb9197c86a" width="300"/></td>
+  </tr>
+</table>
 
 
 
@@ -48,3 +64,8 @@ Além da listagem de jogos, agora conta com **autenticação segura via Firebase
 
 ```bash
 git clone https://github.com/Chiqueto/GameVerseR.git
+```
+
+2. Rode o comando flutter pub get para instalar as dependências
+
+3. Rode flutter run
